@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -24,6 +24,22 @@ class TestHTMLNode(unittest.TestCase):
         node = HTMLNode("div", "This is a div", {"class": "container"}, [HTMLNode("span")])
         node2 = HTMLNode("div", "This is a div", {"class": "container"})
         self.assertNotEqual(node, node2)
+
+class TestParentNode(unittest.TestCase):
+    def test_to_html_with_children(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
+
+    def test_to_html_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<div><span><b>grandchild</b></span></div>",
+        )
+
 
 class TestLeafNode(unittest.TestCase):
     def test_leafnode_requires_value(self):
