@@ -53,3 +53,30 @@ def text_node_to_html_node(text_node):
         
         case _:
             raise ValueError(f"invalid text type: {text_node.text_type}")
+
+def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    nodes_to_return = []
+
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            nodes_to_return.append(old_node)
+            continue
+
+        split_text = old_node.text.split(delimiter)
+        new_nodes = []
+
+        if len(split_text) % 2 == 0:
+            raise ValueError("invalid markdown, formatted section not closed")
+
+        for index, text in enumerate(split_text):
+            if text == "":
+                continue
+
+            if index % 2 == 0:
+                new_nodes.append(TextNode(text, TextType.TEXT))
+            else:
+                new_nodes.append(TextNode(text, text_type))
+
+        nodes_to_return.extend(new_nodes)
+
+    return nodes_to_return
